@@ -1,7 +1,7 @@
 const buku = [];
 const RENDER_BUKU = "render-buku";
 const SAVE_BUKU = "save-buku";
-const STORAGE_KEY = "Books"
+const STORAGE_KEY = "Books";
 
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("inputBook");
@@ -11,38 +11,52 @@ document.addEventListener("DOMContentLoaded", function () {
     tambahBuku();
   });
 
-  if(cekStorage()){
-    tampilkanBukuDariStorage(); 
+  if (cekStorage()) {
+    tampilkanBukuDariStorage();
   }
+
+  const searchBar = document.forms["searchBook"].querySelector("input");
+  searchBar.addEventListener("keyup", function (event) {
+    const term = event.target.value.toLowerCase();
+    const bukuBelumSelesai = document.getElementsByTagName("article");
+    Array.from(bukuBelumSelesai).forEach(function (buku) {
+      const title = buku.firstElementChild.textContent;
+      if (title.toLowerCase().indexOf(term) != -1) {
+        buku.style.display = "block";
+      } else {
+        buku.style.display = "none";
+      }
+    });
+  });
 });
 
-function cekStorage(){
-    if(typeof (Storage) === undefined){
-        alert("Browser Tidak Mendukung Local Storage");
-        return false;
-    }
-    return true;
+function cekStorage() {
+  if (typeof Storage === undefined) {
+    alert("Browser Tidak Mendukung Local Storage");
+    return false;
+  }
+  return true;
 }
 
-function saveBuku(){
-    if(cekStorage()){
-        const parsed = JSON.stringify(buku);
-        localStorage.setItem(STORAGE_KEY, parsed);
-        document.dispatchEvent(new Event(SAVE_BUKU));
-    }
+function saveBuku() {
+  if (cekStorage()) {
+    const parsed = JSON.stringify(buku);
+    localStorage.setItem(STORAGE_KEY, parsed);
+    document.dispatchEvent(new Event(SAVE_BUKU));
+  }
 }
 
-function tampilkanBukuDariStorage(){
-    const dataBuku = localStorage.getItem(STORAGE_KEY);
-    let data = JSON.parse(dataBuku);
+function tampilkanBukuDariStorage() {
+  const dataBuku = localStorage.getItem(STORAGE_KEY);
+  let data = JSON.parse(dataBuku);
 
-    if(data !== null){
-        for (const bukuItem of data) {
-            buku.push(bukuItem);
-        }
+  if (data !== null) {
+    for (const bukuItem of data) {
+      buku.push(bukuItem);
     }
+  }
 
-    document.dispatchEvent(new Event(RENDER_BUKU));
+  document.dispatchEvent(new Event(RENDER_BUKU));
 }
 
 function tambahBuku() {
@@ -74,37 +88,36 @@ function findBuku(idBuku) {
 
 function ubahBaca(idBuku) {
   // filter
-    const bukuTarget = findBuku(idBuku);
+  const bukuTarget = findBuku(idBuku);
 
-    if (bukuTarget == null) return;
+  if (bukuTarget == null) return;
 
-    // ubah isComlete jadi true/false
-    if(bukuTarget.isComplete){
-        bukuTarget.isComplete = false;
-    }else{
-        bukuTarget.isComplete = true;
+  // ubah isComlete jadi true/false
+  if (bukuTarget.isComplete) {
+    bukuTarget.isComplete = false;
+  } else {
+    bukuTarget.isComplete = true;
+  }
+  document.dispatchEvent(new Event(RENDER_BUKU));
+  saveBuku();
+}
+
+function findBukuIndex(idBuku) {
+  for (const index in buku) {
+    if (buku[index].id === idBuku) {
+      return index;
     }
-    document.dispatchEvent(new Event(RENDER_BUKU));
-    saveBuku();
+  }
 }
+function hapusBuku(idBuku) {
+  const bukuTarget = findBukuIndex(idBuku);
 
-function findBukuIndex(idBuku){
-    for (const index in buku) {
-        if(buku[index].id === idBuku){
-            return index;
-        }
-    }
+  if (bukuTarget === -1) return;
+  buku.splice(bukuTarget, 1);
+  alert("Buku berhasil dihapus");
+  document.dispatchEvent(new Event(RENDER_BUKU));
+  saveBuku();
 }
-function hapusBuku(idBuku){
-    const bukuTarget = findBukuIndex(idBuku);
-
-    if (bukuTarget === -1 ) return;
-    buku.splice(bukuTarget, 1);
-    alert("Buku berhasil dihapus")
-    document.dispatchEvent(new Event(RENDER_BUKU));
-    saveBuku();
-}
-
 
 function buatBuku(bukuItem) {
   const { id, title, author, year, isComplete } = bukuItem;
@@ -182,10 +195,10 @@ document.addEventListener(RENDER_BUKU, function () {
 
   for (const bukuItem of buku) {
     const bukuElement = buatBuku(bukuItem);
-    if(bukuItem.isComplete){
-        listBukuSudahSelesai.append(bukuElement);
-    }else{
-        listBukuBelumSelesai.append(bukuElement);
+    if (bukuItem.isComplete) {
+      listBukuSudahSelesai.append(bukuElement);
+    } else {
+      listBukuBelumSelesai.append(bukuElement);
     }
   }
 });
