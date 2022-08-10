@@ -111,12 +111,24 @@ function findBukuIndex(idBuku) {
     }
   }
 }
-function hapusBuku(idBuku) {
+function hapusBuku(idBuku, titleBuku, isComleteBuku) {
   const bukuTarget = findBukuIndex(idBuku);
 
   if (bukuTarget === -1) return;
-  buku.splice(bukuTarget, 1);
-  alert("Buku berhasil dihapus");
+  
+  if(!isComleteBuku){
+    const jawaban = prompt(`Buku ${titleBuku} belum dibaca, Yakin Mau dihapus ? (Ya/Tidak)`).toLowerCase();
+    if(jawaban == "ya"){
+      buku.splice(bukuTarget, 1);
+      alert(`Buku ${titleBuku} berhasil dihapus`);
+    }else{
+      alert(`Selamat Membaca`);
+    }
+  }else{
+    buku.splice(bukuTarget, 1);
+    alert(`Buku ${titleBuku} berhasil dihapus`);
+  }
+
   document.dispatchEvent(new Event(RENDER_BUKU));
   saveBuku();
 }
@@ -153,7 +165,7 @@ function buatBuku(bukuItem) {
     hapusBukuButton.innerText = "Hapus Buku";
     hapusBukuButton.classList.add("red");
     hapusBukuButton.addEventListener("click", function () {
-      hapusBuku(id);
+      hapusBuku(id, title, isComplete);
     });
 
     const actionContainer = document.createElement("div");
@@ -173,7 +185,7 @@ function buatBuku(bukuItem) {
     hapusBukuButton.innerText = "Hapus Buku";
     hapusBukuButton.classList.add("red");
     hapusBukuButton.addEventListener("click", function () {
-      hapusBuku(id);
+      hapusBuku(id, title, isComplete);
     });
 
     const actionContainer = document.createElement("div");
