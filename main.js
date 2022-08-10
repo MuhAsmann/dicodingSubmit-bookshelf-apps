@@ -18,9 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchBar = document.forms["searchBook"].querySelector("input");
   searchBar.addEventListener("keyup", function (event) {
     const term = event.target.value.toLowerCase();
-    const bukuBelumSelesai = document.getElementsByTagName("article");
-    Array.from(bukuBelumSelesai).forEach(function (buku) {
+    const searchBuku = document.getElementsByTagName("article");
+    Array.from(searchBuku).forEach(function (buku) {
+      // mengambil title/judul dalam bentuk text dari element article => <h3>
       const title = buku.firstElementChild.textContent;
+      //indexOf akan mengembalikan posisi nilai string, jika tidak ada, maka akan mengembalikan nilai -1 
       if (title.toLowerCase().indexOf(term) != -1) {
         buku.style.display = "block";
       } else {
